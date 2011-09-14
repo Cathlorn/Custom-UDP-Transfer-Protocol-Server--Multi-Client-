@@ -1,0 +1,80 @@
+# depslib dependency file v1.0
+1232774852 source:/home/death/source/tcptest/main.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/wait.h>
+
+1232777117 source:/home/death/source/gateway-client/main.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/wait.h>
+
+1233067924 source:/home/death/source/gateway-client2/main.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/wait.h>
+	<pthread.h>
+	<stdio.h>
+	<termios.h>
+	<unistd.h>
+	<ctype.h>
+	<signal.h>
+	<fcntl.h>
+
+1249585990 source:/home/death/source/simple-server/main.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/wait.h>
+	<pthread.h>
+	<stdio.h>
+	<signal.h>
+	<fcntl.h>
+
+1249587491 source:/home/death/source/simple-server2/main.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/wait.h>
+	<pthread.h>
+	<stdio.h>
+	<signal.h>
+	<fcntl.h>
+
+1249655348 source:/home/death/source/simple-server3/main.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/wait.h>
+	<pthread.h>
+	<stdio.h>
+	<signal.h>
+	<fcntl.h>
+
