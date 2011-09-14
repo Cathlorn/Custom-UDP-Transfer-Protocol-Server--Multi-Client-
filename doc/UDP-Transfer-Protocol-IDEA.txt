@@ -1,0 +1,49 @@
+One method used to conserve data usage is to use less reliable transport mechanism and a best-effort transmission policy such as provided by the User Datagram Protocol (UDP).  This is possible, especially if the application itself will include an acknowledgement scheme.  In this case it is not required to utilize the more reliable session oriented protocols such as TCP transport services offer.  Best effort is chosen as the delivery method because reliable, stream transport of data, such as TCP comes with additional overhead. Overhead is needed to establish a connection, handshaking is needed to send data, and overhead is needed to maintain a connection. This can prove to be especially problematic as the user may be constantly on the move and changing network connections or toggling between having and losing network connectivity. Frequent losses of connectivity will require repeated attempts to re-establish a connection to send data, increasing further the amount of data exchanged to deliver the measurements. Best-effort delivery, like that used in UDP transmissions, allows the transmissions to be connectionless and consequently not susceptible to these issues.
+
+Data transmitted can be any format; however a binary data object is believed to be the most appropriate. Formats such as XML and JSON which may be easily readable in text require significant payload overhead as many characters have to be used to describe the hierarchy and organization that the data belongs to in addition to the data itself. Due to limited resources, this is unnecessary. Even when these text methods are compressed, the efficiency in delivering the raw measurements falls short to a binary object optimized to deliver the most data in the least space possible.
+
+The datagrams sent by the device should, in addition to measurement data, also include a sequence number so that redundant transmissions can be identified, a timestamp to indicate when in time these measurements were taken, a type field to identify the type of measurements that are reported assuming the type reported is not always the same, and control fields to enable a simple acknowledgement system to ensure data is properly delivered.  
+
+One method for acknowledgement, yet still conserving data transmissions, is for the Health Server to listen for incoming datagrams. The device will send a given measurement and will periodically continue to send that measurement until an acknowledgement is received. The Health Server will keep a running table to the last sequence number received from each device it has received messages from (with timeouts to remove an entry after a certain threshold of time has expired without activity). This indexed sequence number will allow the Health Server to ignore duplicates. (It knows the next sequence to expect). 
+
+Should the Health Server need to request a management operation of the mPERS device (e.g., firmware upgrade, remote provisioning, reset of device), the acknowledgement system can double as a notification system. When data is reported by the device, the Health server can, within the acknowledgement itself and without having to send a separate message, , place a mark (perhaps setting a bit field) to indicate that there is a pending management command. Should this happen, the Health server will be obligated to wait until it receives a counter acknowledgement from the device that it has received the acknowledgement, resending periodically the acknowledgement if nothing is heard. When the device receives such a flagged acknowledgement, it is obligated to immediately send back to the Health Server the counter acknowledgement. From there, it is responsible to establish management inquiry of its own in a separate message with the Health Server to receive further instructions. Because management operations are infrequent and subsequently will not have a significant impact on overall data usage, this new connection may or may not use a different protocol such as a REST POST interface. This should prove acceptable since use of this channel should be very infrequent. Each stage of the acknowledgement system has timeouts on both sides to prevent deadlock should communications fail during mid-transmission.
+Another embodiment could benefit from a stateless Health Server implementation which need keep no state on behalf of each user.  The Health Server simply acknowledges a packet when received.  The acknowledgement packet would contain the sequence number of the last received packet.  If the mPERS device does not receive the acknowledgement – in the event that the acknowledgement is either lost in transit or that the original packet never arrived at the server – it will retransmit the original packet according to a proper waiting period and retransmission policies.  In many cases, a stateless server is desirable for scalability reasons.
+
+Example Structures:
+
+
+struct PERS_DataPacket
+{   //Assuming 10 min 
+    struct UdpCommHeader header;
+    struct PERS_Data data;
+};
+
+
+struct UdpCommHeader
+{
+    unsigned char status;
+    unsigned char mgmt;
+    uint16 seqNum;
+    unsigned char reserved[8];
+};
+
+struct PERS_Data
+{   //Assuming 10 min worth of data
+    uint32 customerId; //Needs to be at least this size whatever we use
+    uint32 time; //Needs to be at least this size whatever we use
+    uint16 temp; //Same as now
+    uint16 batt;  //Same as now
+    uint16 steps[10]; //Same as now
+    uint32 activity[10]; //Same as now
+    Location currentLocation;
+    uint8 reserved[2];
+};
+
+struct Location
+{
+    uint32 latitude;
+    uint32 longitude;
+    uint32 altitude;
+    uint16 accuracy;
+};
+

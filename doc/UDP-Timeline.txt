@@ -1,0 +1,109 @@
+Transfer Timeline:
+
+
+[Standard Transfer]
+
+Client                                                          Server
+----------------------------------------------------------------------------------
+(Idle)                                                          (listening)
+(Sends Update)    ----------------------------->                (Receives Update)
+(waits for ack)                                                 (Process Data)
+(Receives Ack)    <-----------------------------                (Sends Ack)
+(Process Ack,                                                   (listening)
+ No further action
+ needed)
+(Idle)
+
+
+
+
+[Transfer w. Mgmt Request]
+
+Client                                                          Server
+----------------------------------------------------------------------------------
+(Idle)                                                          (listening)
+(Sends Update)    ----------------------------->                (Receives Update)
+(waits for ack)                                                 (Process Data, Sets MGMT Bit to indicate a maintenance action is needed)
+(Receives Ack)    <-----------------------------                (Sends Ack)
+(Process Ack,                                                   (waits for ack)
+ Notices MGMT
+ Bit, must send
+ ack back)
+(Sends Ack)       ----------------------------->                (Receives Ack)
+(Idle)                                                          (Process Ack, Knows Client knows about MGMT Needed. No further action needed)
+(Idle)                                                          (listening)
+
+
+
+[Transfer w. Failed Ack]
+
+Client                                                          Server
+----------------------------------------------------------------------------------
+(Idle)                                                          (listening)
+(Sends Update)    ----------------------------->                (Receives Update)
+(waits for ack)                                                 (Process Data)
+                         (COMM FAILURE!)
+(waits for ack)                  x--------------                (Sends Ack)
+                         (5 second later)
+(Resends Update)   -------------x                               (listening)
+
+                        .
+                        .
+                        .
+
+                         (55 second later)
+(Resends Update)   -------------x                               (listening)
+(Gives up. Terminates                                           
+Communication Session. Saves Data)
+(Idle)                                                          (listening)
+
+
+[Transfer w. Mgmt Request w. Failed Timeout During 2nd Ack]
+
+Client                                                          Server
+----------------------------------------------------------------------------------
+(Idle)                                                          (listening)
+(Sends Update)    ----------------------------->                (Receives Update)
+(waits for ack)                                                 (Process Data, Sets MGMT Bit to indicate a maintenance action is needed)
+(Receives Ack)    <-----------------------------                (Sends Ack)
+                         (COMM FAILURE!)
+
+(Process Ack,                                                   (waits for ack)
+ Notices MGMT
+ Bit, must send
+ ack back)
+(Sends Ack)       -------------x                                (waits for ack)
+                         (5 second later)
+(Sends Ack)       -------------xx--------------                 (Sends Ack)
+
+                        .
+                        .
+                        .
+
+                         (55 second later)
+(Sends Ack)       -------------xx--------------                 (Sends Ack)
+(Final wait for ack)                                            (Final wait for ack)
+                         (5 second later)
+(Gives up. Terminates                                           (Gives up. Terminates communication session)
+Communication Session)
+(Idle)                                                          (listening)
+
+
+[Transfer w. Duplicate Transmission]
+
+Client                                                          Server
+----------------------------------------------------------------------------------
+(Idle)                                                          (listening)
+(Sends Update)    ----------------------------->                (Receives Update)
+(waits for ack)                                                 (Process Data)
+                         (COMM FAILURE!)
+(waits for ack)                  x--------------                (Sends Ack)
+                         (5 second later)
+(waits for ack)          (COMM RESTORED!)                       (listening)
+(Resends Update)   ----------------------------->               (Receives Update)
+(waits for ack)                                                 (Process Data. Seq # Indicates Redundant. Data Ignored.)
+(Receives Ack)    <-----------------------------                (Sends Ack)
+(Process Ack,                                                   (listening)
+ No further action
+ needed)
+(Idle)
